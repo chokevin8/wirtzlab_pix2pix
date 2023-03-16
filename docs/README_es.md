@@ -115,7 +115,7 @@ Para ver más resultados intermedios, consulte `./checkpoints/maps_cyclegan/web/
 - Pruebe el modelo:
 ```bash
 #!./scripts/test_cyclegan.sh
-python test.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan
+python test_pix2pix.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan
 ```
 -Los resultados de la prueba se guardarán en un archivo html aquí: `./results/maps_cyclegan/latest_test/index.html`.
 
@@ -135,7 +135,7 @@ Para ver más resultados intermedios, consulte `./checkpoints/facades_pix2pix/we
 - Pruebe el modelo (`bash ./scripts/test_pix2pix.sh`):
 ```bash
 #!./scripts/test_pix2pix.sh
-python test.py --dataroot ./datasets/facades --name facades_pix2pix --model pix2pix --direction BtoA
+python test_pix2pix.py --dataroot ./datasets/facades --name facades_pix2pix --model pix2pix --direction BtoA
 ```
 - Los resultados de la prueba se guardarán en un archivo html aquí: `./results/facades_pix2pix/test_latest/index.html`. Puede encontrar más scripts en `scripts` directory.
 - Para entrenar y probar modelos de colorización basados en pix2pix, agregue la linea `--model colorization` y `--dataset_mode colorization`. Para más detalles de nuestro entrenamiento [tips](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/tips.md#notes-on-colorization).
@@ -154,7 +154,7 @@ bash ./datasets/download_cyclegan_dataset.sh horse2zebra
 
 - Luego genere los resultados usando:
 ```bash
-python test.py --dataroot datasets/horse2zebra/testA --name horse2zebra_pretrained --model test --no_dropout
+python test_pix2pix.py --dataroot datasets/horse2zebra/testA --name horse2zebra_pretrained --model test_pix2pix --no_dropout
 ```
 - La opcion `--model test` ise usa para generar resultados de CycleGAN de un solo lado. Esta opción configurará automáticamente
  `--dataset_mode single`, carga solo las imágenes de un conjunto. Por el contrario, el uso de `--model cycle_gan` requiere cargar y generar resultados en ambas direcciones, lo que a veces es innecesario. Los resultados se guardarán en `./results/`. Use `--results_dir {directory_path_to_save_result}` para especificar el directorio de resultados.
@@ -174,7 +174,7 @@ bash ./datasets/download_pix2pix_dataset.sh facades
 ```
 - Luego genere los resultados usando:
 ```bash
-python test.py --dataroot ./datasets/facades/ --direction BtoA --model pix2pix --name facades_label2photo_pretrained
+python test_pix2pix.py --dataroot ./datasets/facades/ --direction BtoA --model pix2pix --name facades_label2photo_pretrained
 ```
 - Tenga en cuenta que `--direction BtoA` como Facades dataset's, son direcciones A o B para etiquetado de fotos.
 

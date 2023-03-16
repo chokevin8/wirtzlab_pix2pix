@@ -6,7 +6,7 @@ class TestModel(BaseModel):
     """ This TesteModel can be used to generate CycleGAN results for only one direction.
     This model will automatically set '--dataset_mode single', which only loads the images from one collection.
 
-    See the test instruction for more details.
+    See the test_pix2pix instruction for more details.
     """
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
@@ -14,12 +14,12 @@ class TestModel(BaseModel):
 
         Parameters:
             parser          -- original option parser
-            is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
+            is_train (bool) -- whether training phase or test_pix2pix phase. You can use this flag to add training-specific or test_pix2pix-specific options.
 
         Returns:
             the modified parser.
 
-        The model can only be used during test time. It requires '--dataset_mode single'.
+        The model can only be used during test_pix2pix time. It requires '--dataset_mode single'.
         You need to specify the network using the option '--model_suffix'.
         """
         assert not is_train, 'TestModel cannot be used during training time'
@@ -36,11 +36,11 @@ class TestModel(BaseModel):
         """
         assert(not opt.isTrain)
         BaseModel.__init__(self, opt)
-        # specify the training losses you want to print out. The training/test scripts  will call <BaseModel.get_current_losses>
+        # specify the training losses you want to print out. The training/test_pix2pix scripts  will call <BaseModel.get_current_losses>
         self.loss_names = []
-        # specify the images you want to save/display. The training/test scripts  will call <BaseModel.get_current_visuals>
+        # specify the images you want to save/display. The training/test_pix2pix scripts  will call <BaseModel.get_current_visuals>
         self.visual_names = ['real', 'fake']
-        # specify the models you want to save to the disk. The training/test scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
+        # specify the models you want to save to the disk. The training/test_pix2pix scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
         self.model_names = ['G' + opt.model_suffix]  # only generator is needed.
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG,
                                       opt.norm, not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
@@ -65,5 +65,5 @@ class TestModel(BaseModel):
         self.fake = self.netG(self.real)  # G(real)
 
     def optimize_parameters(self):
-        """No optimization for test model."""
+        """No optimization for test_pix2pix model."""
         pass

@@ -26,7 +26,7 @@ def check_matching_pair(segmap_path, photo_path):
     
 
 def process_cityscapes(gtFine_dir, leftImg8bit_dir, output_dir, phase):
-    save_phase = 'test' if phase == 'val' else 'train'
+    save_phase = 'test_pix2pix' if phase == 'val' else 'train'
     savedir = os.path.join(output_dir, save_phase)
     os.makedirs(savedir, exist_ok=True)
     os.makedirs(savedir + 'A', exist_ok=True)

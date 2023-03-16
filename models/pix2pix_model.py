@@ -19,7 +19,7 @@ class Pix2PixModel(BaseModel):
 
         Parameters:
             parser          -- original option parser
-            is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
+            is_train (bool) -- whether training phase or test_pix2pix phase. You can use this flag to add training-specific or test_pix2pix-specific options.
 
         Returns:
             the modified parser.
@@ -43,14 +43,14 @@ class Pix2PixModel(BaseModel):
             opt (Option class)-- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         BaseModel.__init__(self, opt)
-        # specify the training losses you want to print out. The training/test scripts will call <BaseModel.get_current_losses>
+        # specify the training losses you want to print out. The training/test_pix2pix scripts will call <BaseModel.get_current_losses>
         self.loss_names = ['G_GAN', 'G_L1', 'D_real', 'D_fake']
-        # specify the images you want to save/display. The training/test scripts will call <BaseModel.get_current_visuals>
+        # specify the images you want to save/display. The training/test_pix2pix scripts will call <BaseModel.get_current_visuals>
         self.visual_names = ['real_A', 'fake_B', 'real_B']
-        # specify the models you want to save to the disk. The training/test scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
+        # specify the models you want to save to the disk. The training/test_pix2pix scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
         if self.isTrain:
             self.model_names = ['G', 'D']
-        else:  # during test time, only load G
+        else:  # during test_pix2pix time, only load G
             self.model_names = ['G']
         # define networks (both generator and discriminator)
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG, opt.norm,
@@ -84,7 +84,7 @@ class Pix2PixModel(BaseModel):
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
 
     def forward(self):
-        """Run forward pass; called by both functions <optimize_parameters> and <test>."""
+        """Run forward pass; called by both functions <optimize_parameters> and <test_pix2pix>."""
         self.fake_B = self.netG(self.real_A)  # G(A)
 
     def backward_D(self):

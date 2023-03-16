@@ -8,7 +8,7 @@ class AlignedDataset(BaseDataset):
     """A dataset class for paired image dataset.
 
     It assumes that the directory '/path/to/data/train' contains image pairs in the form of {A,B}.
-    During test time, you need to prepare a directory '/path/to/data/test'.
+    During test_pix2pix time, you need to prepare a directory '/path/to/data/test_pix2pix'.
     """
 
     def __init__(self, opt):

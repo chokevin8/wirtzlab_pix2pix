@@ -24,7 +24,7 @@ class TemplateDataset(BaseDataset):
 
         Parameters:
             parser          -- original option parser
-            is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
+            is_train (bool) -- whether training phase or test_pix2pix phase. You can use this flag to add training-specific or test_pix2pix-specific options.
 
         Returns:
             the modified parser.

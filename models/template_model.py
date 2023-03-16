@@ -12,7 +12,7 @@ You need to implement the following functions:
     <modify_commandline_options>:　Add model-specific options and rewrite default values for existing options.
     <__init__>: Initialize this model class.
     <set_input>: Unpack input data and perform data pre-processing.
-    <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test>.
+    <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test_pix2pix>.
     <optimize_parameters>: Update network weights; it will be called in every training iteration.
 """
 import torch
@@ -27,7 +27,7 @@ class TemplateModel(BaseModel):
 
         Parameters:
             parser -- the option parser
-            is_train -- if it is training phase or test phase. You can use this flag to add training-specific or test-specific options.
+            is_train -- if it is training phase or test_pix2pix phase. You can use this flag to add training-specific or test_pix2pix-specific options.
 
         Returns:
             the modified parser.
@@ -42,7 +42,7 @@ class TemplateModel(BaseModel):
         """Initialize this model class.
 
         Parameters:
-            opt -- training/test options
+            opt -- training/test_pix2pix options
 
         A few things can be done here.
         - (required) call the initialization function of BaseModel
@@ -54,9 +54,9 @@ class TemplateModel(BaseModel):
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
         self.visual_names = ['data_A', 'data_B', 'output']
         # specify the models you want to save to the disk. The program will call base_model.save_networks and base_model.load_networks to save and load networks.
-        # you can use opt.isTrain to specify different behaviors for training and test. For example, some networks will not be used during test, and you don't need to load them.
+        # you can use opt.isTrain to specify different behaviors for training and test_pix2pix. For example, some networks will not be used during test_pix2pix, and you don't need to load them.
         self.model_names = ['G']
-        # define networks; you can use opt.isTrain to specify different behaviors for training and test.
+        # define networks; you can use opt.isTrain to specify different behaviors for training and test_pix2pix.
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG, gpu_ids=self.gpu_ids)
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
@@ -81,7 +81,7 @@ class TemplateModel(BaseModel):
         self.image_paths = input['A_paths' if AtoB else 'B_paths']  # get image paths
 
     def forward(self):
-        """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
+        """Run forward pass. This will be called by both functions <optimize_parameters> and <test_pix2pix>."""
         self.output = self.netG(self.data_A)  # generate output image given the input data_A
 
     def backward(self):

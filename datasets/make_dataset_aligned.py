@@ -38,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--dataset-path',
         dest='dataset_path',
-        help='Which folder to process (it should have subfolders testA, testB, trainA111 and trainB111'
+        help='Which folder to process (it should have subfolders testA, testB, trainA and trainB'
     )
     args = parser.parse_args()
 
@@ -50,10 +50,10 @@ if __name__ == '__main__':
     test_a_file_paths = get_file_paths(test_a_path)
     test_b_file_paths = get_file_paths(test_b_path)
     assert(len(test_a_file_paths) == len(test_b_file_paths))
-    test_path = os.path.join(dataset_folder, 'test')
+    test_path = os.path.join(dataset_folder, 'test_pix2pix')
 
-    train_a_path = os.path.join(dataset_folder, 'trainA111')
-    train_b_path = os.path.join(dataset_folder, 'trainB111')
+    train_a_path = os.path.join(dataset_folder, 'trainA')
+    train_b_path = os.path.join(dataset_folder, 'trainB')
     train_a_file_paths = get_file_paths(train_a_path)
     train_b_file_paths = get_file_paths(train_b_path)
     assert(len(train_a_file_paths) == len(train_b_file_paths))

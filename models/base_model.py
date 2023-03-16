@@ -49,7 +49,7 @@ class BaseModel(ABC):
 
         Parameters:
             parser          -- original option parser
-            is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
+            is_train (bool) -- whether training phase or test_pix2pix phase. You can use this flag to add training-specific or test_pix2pix-specific options.
 
         Returns:
             the modified parser.
@@ -67,7 +67,7 @@ class BaseModel(ABC):
 
     @abstractmethod
     def forward(self):
-        """Run forward pass; called by both functions <optimize_parameters> and <test>."""
+        """Run forward pass; called by both functions <optimize_parameters> and <test_pix2pix>."""
         pass
 
     @abstractmethod
@@ -89,14 +89,14 @@ class BaseModel(ABC):
         self.print_networks(opt.verbose)
 
     def eval(self):
-        """Make models eval mode during test time"""
+        """Make models eval mode during test_pix2pix time"""
         for name in self.model_names:
             if isinstance(name, str):
                 net = getattr(self, 'net' + name)
                 net.eval()
 
     def test(self):
-        """Forward function used in test time.
+        """Forward function used in test_pix2pix time.
 
         This function wraps <forward> function in no_grad() so we don't save intermediate steps for backprop
         It also calls <compute_visuals> to produce additional visualization results
