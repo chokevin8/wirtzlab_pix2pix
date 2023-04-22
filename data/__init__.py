@@ -76,7 +76,11 @@ class CustomDatasetDataLoader():
             self.dataset,
             batch_size=opt.batch_size,
             shuffle=not opt.serial_batches,
-            num_workers=int(opt.num_threads))
+            num_workers = int(0))
+            # num_workers=int(opt.num_threads)) ## this change was made due to error:
+        # File "C:\Users\labadmin\.conda\envs\wsi_analysis\lib\multiprocessing\spawn.py", line 126, in _main
+        #     self = reduction.pickle.load(from_parent)
+        # EOFError: Ran out of input
 
     def load_data(self):
         return self
