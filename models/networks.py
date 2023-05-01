@@ -246,7 +246,7 @@ class GANLoss(nn.Module):
             target_is_real (bool) - - if the ground truth label is for real images or fake images
 
         Returns:
-            A label tensor filled with ground truth label, and with the size of the input
+            fold_A label tensor filled with ground truth label, and with the size of the input
         """
 
         if target_is_real:
@@ -380,7 +380,7 @@ class ResnetBlock(nn.Module):
     def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         """Initialize the Resnet block
 
-        A resnet block is a conv block with skip connections
+        fold_A resnet block is a conv block with skip connections
         We construct a conv block with build_conv_block function,
         and implement skip connections in <forward> function.
         Original Resnet paper: https://arxiv.org/pdf/1512.03385.pdf

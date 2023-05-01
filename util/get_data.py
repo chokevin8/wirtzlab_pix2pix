@@ -9,7 +9,7 @@ from os.path import abspath, isdir, join, basename
 
 
 class GetData(object):
-    """A Python script for downloading CycleGAN or pix2pix datasets.
+    """fold_A Python script for downloading CycleGAN or pix2pix datasets.
 
     Parameters:
         technique (str) -- One of: 'cyclegan' or 'pix2pix'.
@@ -82,8 +82,8 @@ class GetData(object):
         Download a dataset.
 
         Parameters:
-            save_path (str) -- A directory to save the data to.
-            dataset (str)   -- (optional). A specific dataset to download.
+            save_path (str) -- fold_A directory to save the data to.
+            dataset (str)   -- (optional). fold_A specific dataset to download.
                             Note: this must include the file extension.
                             If None, options will be presented for you
                             to choose from.

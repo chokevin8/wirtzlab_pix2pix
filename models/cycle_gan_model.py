@@ -28,18 +28,18 @@ class CycleGANModel(BaseModel):
             the modified parser.
 
         For CycleGAN, in addition to GAN losses, we introduce lambda_A, lambda_B, and lambda_identity for the following losses.
-        A (source domain), B (target domain).
-        Generators: G_A: A -> B; G_B: B -> A.
-        Discriminators: D_A: G_A(A) vs. B; D_B: G_B(B) vs. A.
-        Forward cycle loss:  lambda_A * ||G_B(G_A(A)) - A|| (Eqn. (2) in the paper)
-        Backward cycle loss: lambda_B * ||G_A(G_B(B)) - B|| (Eqn. (2) in the paper)
-        Identity loss (optional): lambda_identity * (||G_A(B) - B|| * lambda_B + ||G_B(A) - A|| * lambda_A) (Sec 5.2 "Photo generation from paintings" in the paper)
+        fold_A (source domain), fold_B (target domain).
+        Generators: G_A: fold_A -> fold_B; G_B: fold_B -> fold_A.
+        Discriminators: D_A: G_A(fold_A) vs. fold_B; D_B: G_B(fold_B) vs. fold_A.
+        Forward cycle loss:  lambda_A * ||G_B(G_A(fold_A)) - fold_A|| (Eqn. (2) in the paper)
+        Backward cycle loss: lambda_B * ||G_A(G_B(fold_B)) - fold_B|| (Eqn. (2) in the paper)
+        Identity loss (optional): lambda_identity * (||G_A(fold_B) - fold_B|| * lambda_B + ||G_B(fold_A) - fold_A|| * lambda_A) (Sec 5.2 "Photo generation from paintings" in the paper)
         Dropout is not used in the original CycleGAN paper.
         """
         parser.set_defaults(no_dropout=True)  # default CycleGAN did not use dropout
         if is_train:
-            parser.add_argument('--lambda_A', type=float, default=10.0, help='weight for cycle loss (A -> B -> A)')
-            parser.add_argument('--lambda_B', type=float, default=10.0, help='weight for cycle loss (B -> A -> B)')
+            parser.add_argument('--lambda_A', type=float, default=10.0, help='weight for cycle loss (fold_A -> fold_B -> fold_A)')
+            parser.add_argument('--lambda_B', type=float, default=10.0, help='weight for cycle loss (fold_B -> fold_A -> fold_B)')
             parser.add_argument('--lambda_identity', type=float, default=0.5, help='use identity mapping. Setting lambda_identity other than 0 has an effect of scaling the weight of the identity mapping loss. For example, if the weight of the identity loss should be 10 times smaller than the weight of the reconstruction loss, please set lambda_identity = 0.1')
 
         return parser
@@ -56,11 +56,11 @@ class CycleGANModel(BaseModel):
         # specify the images you want to save/display. The training/test_pix2pix scripts will call <BaseModel.get_current_visuals>
         visual_names_A = ['real_A', 'fake_B', 'rec_A']
         visual_names_B = ['real_B', 'fake_A', 'rec_B']
-        if self.isTrain and self.opt.lambda_identity > 0.0:  # if identity loss is used, we also visualize idt_B=G_A(B) ad idt_A=G_A(B)
+        if self.isTrain and self.opt.lambda_identity > 0.0:  # if identity loss is used, we also visualize idt_B=G_A(fold_B) ad idt_A=G_A(fold_B)
             visual_names_A.append('idt_B')
             visual_names_B.append('idt_A')
 
-        self.visual_names = visual_names_A + visual_names_B  # combine visualizations for A and B
+        self.visual_names = visual_names_A + visual_names_B  # combine visualizations for fold_A and fold_B
         # specify the models you want to save to the disk. The training/test_pix2pix scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>.
         if self.isTrain:
             self.model_names = ['G_A', 'G_B', 'D_A', 'D_B']
@@ -102,19 +102,19 @@ class CycleGANModel(BaseModel):
         Parameters:
             input (dict): include the data itself and its metadata information.
 
-        The option 'direction' can be used to swap domain A and domain B.
+        The option 'direction' can be used to swap domain fold_A and domain fold_B.
         """
         AtoB = self.opt.direction == 'AtoB'
-        self.real_A = input['A' if AtoB else 'B'].to(self.device)
-        self.real_B = input['B' if AtoB else 'A'].to(self.device)
+        self.real_A = input['fold_A' if AtoB else 'fold_B'].to(self.device)
+        self.real_B = input['fold_B' if AtoB else 'fold_A'].to(self.device)
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test_pix2pix>."""
-        self.fake_B = self.netG_A(self.real_A)  # G_A(A)
-        self.rec_A = self.netG_B(self.fake_B)   # G_B(G_A(A))
-        self.fake_A = self.netG_B(self.real_B)  # G_B(B)
-        self.rec_B = self.netG_A(self.fake_A)   # G_A(G_B(B))
+        self.fake_B = self.netG_A(self.real_A)  # G_A(fold_A)
+        self.rec_A = self.netG_B(self.fake_B)   # G_B(G_A(fold_A))
+        self.fake_A = self.netG_B(self.real_B)  # G_B(fold_B)
+        self.rec_B = self.netG_A(self.fake_A)   # G_A(G_B(fold_B))
 
     def backward_D_basic(self, netD, real, fake):
         """Calculate GAN loss for the discriminator
@@ -155,23 +155,23 @@ class CycleGANModel(BaseModel):
         lambda_B = self.opt.lambda_B
         # Identity loss
         if lambda_idt > 0:
-            # G_A should be identity if real_B is fed: ||G_A(B) - B||
+            # G_A should be identity if real_B is fed: ||G_A(fold_B) - fold_B||
             self.idt_A = self.netG_A(self.real_B)
             self.loss_idt_A = self.criterionIdt(self.idt_A, self.real_B) * lambda_B * lambda_idt
-            # G_B should be identity if real_A is fed: ||G_B(A) - A||
+            # G_B should be identity if real_A is fed: ||G_B(fold_A) - fold_A||
             self.idt_B = self.netG_B(self.real_A)
             self.loss_idt_B = self.criterionIdt(self.idt_B, self.real_A) * lambda_A * lambda_idt
         else:
             self.loss_idt_A = 0
             self.loss_idt_B = 0
 
-        # GAN loss D_A(G_A(A))
+        # GAN loss D_A(G_A(fold_A))
         self.loss_G_A = self.criterionGAN(self.netD_A(self.fake_B), True)
-        # GAN loss D_B(G_B(B))
+        # GAN loss D_B(G_B(fold_B))
         self.loss_G_B = self.criterionGAN(self.netD_B(self.fake_A), True)
-        # Forward cycle loss || G_B(G_A(A)) - A||
+        # Forward cycle loss || G_B(G_A(fold_A)) - fold_A||
         self.loss_cycle_A = self.criterionCycle(self.rec_A, self.real_A) * lambda_A
-        # Backward cycle loss || G_A(G_B(B)) - B||
+        # Backward cycle loss || G_A(G_B(fold_B)) - fold_B||
         self.loss_cycle_B = self.criterionCycle(self.rec_B, self.real_B) * lambda_B
         # combined loss and calculate gradients
         self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B

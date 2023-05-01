@@ -25,7 +25,7 @@ class Pix2PixModel(BaseModel):
             the modified parser.
 
         For pix2pix, we do not use image buffer
-        The training objective is: GAN Loss + lambda_L1 * ||G(A)-B||_1
+        The training objective is: GAN Loss + lambda_L1 * ||G(fold_A)-fold_B||_1
         By default, we use vanilla GAN loss, UNet with batchnorm, and aligned datasets.
         """
         # changing the default values to match the pix2pix paper (https://phillipi.github.io/pix2pix/)
@@ -76,16 +76,16 @@ class Pix2PixModel(BaseModel):
         Parameters:
             input (dict): include the data itself and its metadata information.
 
-        The option 'direction' can be used to swap images in domain A and domain B.
+        The option 'direction' can be used to swap images in domain fold_A and domain fold_B.
         """
         AtoB = self.opt.direction == 'AtoB'
-        self.real_A = input['A' if AtoB else 'B'].to(self.device)
-        self.real_B = input['B' if AtoB else 'A'].to(self.device)
+        self.real_A = input['fold_A' if AtoB else 'fold_B'].to(self.device)
+        self.real_B = input['fold_B' if AtoB else 'fold_A'].to(self.device)
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test_pix2pix>."""
-        self.fake_B = self.netG(self.real_A)  # G(A)
+        self.fake_B = self.netG(self.real_A)  # G(fold_A)
 
     def backward_D(self):
         """Calculate GAN loss for the discriminator"""
@@ -103,18 +103,18 @@ class Pix2PixModel(BaseModel):
 
     def backward_G(self):
         """Calculate GAN and L1 loss for the generator"""
-        # First, G(A) should fake the discriminator
+        # First, G(fold_A) should fake the discriminator
         fake_AB = torch.cat((self.real_A, self.fake_B), 1)
         pred_fake = self.netD(fake_AB)
         self.loss_G_GAN = self.criterionGAN(pred_fake, True)
-        # Second, G(A) = B
+        # Second, G(fold_A) = fold_B
         self.loss_G_L1 = self.criterionL1(self.fake_B, self.real_B) * self.opt.lambda_L1
         # combine loss and calculate gradients
         self.loss_G = self.loss_G_GAN + self.loss_G_L1
         self.loss_G.backward()
 
     def optimize_parameters(self):
-        self.forward()                   # compute fake images: G(A)
+        self.forward()                   # compute fake images: G(fold_A)
         # update D
         self.set_requires_grad(self.netD, True)  # enable backprop for D
         self.optimizer_D.zero_grad()     # set D's gradients to zero

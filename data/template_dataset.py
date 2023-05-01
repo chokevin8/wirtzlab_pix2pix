@@ -17,7 +17,7 @@ from data.base_dataset import BaseDataset, get_transform
 
 
 class TemplateDataset(BaseDataset):
-    """A template dataset class for you to implement custom datasets."""
+    """fold_A template dataset class for you to implement custom datasets."""
     @staticmethod
     def modify_commandline_options(parser, is_train):
         """Add new dataset-specific options, and rewrite default values for existing options.
@@ -39,7 +39,7 @@ class TemplateDataset(BaseDataset):
         Parameters:
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
 
-        A few things can be done here.
+        fold_A few things can be done here.
         - save the options (have been done in BaseDataset)
         - get image paths and meta information of the dataset.
         - define the image transformation.

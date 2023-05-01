@@ -5,9 +5,9 @@ from PIL import Image
 
 
 class AlignedDataset(BaseDataset):
-    """A dataset class for paired image dataset.
+    """fold_A dataset class for paired image dataset.
 
-    It assumes that the directory '/path/to/data/train' contains image pairs in the form of {A,B}.
+    It assumes that the directory '/path/to/data/train' contains image pairs in the form of {fold_A,fold_B}.
     During test_pix2pix time, you need to prepare a directory '/path/to/data/test_pix2pix'.
     """
 
@@ -30,22 +30,22 @@ class AlignedDataset(BaseDataset):
         Parameters:
             index - - a random integer for data indexing
 
-        Returns a dictionary that contains A, B, A_paths and B_paths
-            A (tensor) - - an image in the input domain
-            B (tensor) - - its corresponding image in the target domain
+        Returns a dictionary that contains fold_A, fold_B, A_paths and B_paths
+            fold_A (tensor) - - an image in the input domain
+            fold_B (tensor) - - its corresponding image in the target domain
             A_paths (str) - - image paths
             B_paths (str) - - image paths (same as A_paths)
         """
         # read a image given a random integer index
         AB_path = self.AB_paths[index]
         AB = Image.open(AB_path).convert('RGB')
-        # split AB image into A and B
+        # split AB image into fold_A and fold_B
         w, h = AB.size
         w2 = int(w / 2)
         A = AB.crop((0, 0, w2, h))
         B = AB.crop((w2, 0, w, h))
 
-        # apply the same transform to both A and B
+        # apply the same transform to both fold_A and fold_B
         transform_params = get_params(self.opt, A.size)
         A_transform = get_transform(self.opt, transform_params, grayscale=(self.input_nc == 1))
         B_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1))
@@ -53,7 +53,7 @@ class AlignedDataset(BaseDataset):
         A = A_transform(A)
         B = B_transform(B)
 
-        return {'A': A, 'B': B, 'A_paths': AB_path, 'B_paths': AB_path}
+        return {'fold_A': A, 'fold_B': B, 'A_paths': AB_path, 'B_paths': AB_path}
 
     def __len__(self):
         """Return the total number of images in the dataset."""

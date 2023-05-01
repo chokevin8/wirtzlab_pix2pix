@@ -44,7 +44,7 @@ class TemplateModel(BaseModel):
         Parameters:
             opt -- training/test_pix2pix options
 
-        A few things can be done here.
+        fold_A few things can be done here.
         - (required) call the initialization function of BaseModel
         - define loss function, visualization images, model names, and optimizers
         """
@@ -76,8 +76,8 @@ class TemplateModel(BaseModel):
             input: a dictionary that contains the data itself and its metadata information.
         """
         AtoB = self.opt.direction == 'AtoB'  # use <direction> to swap data_A and data_B
-        self.data_A = input['A' if AtoB else 'B'].to(self.device)  # get image data A
-        self.data_B = input['B' if AtoB else 'A'].to(self.device)  # get image data B
+        self.data_A = input['fold_A' if AtoB else 'fold_B'].to(self.device)  # get image data fold_A
+        self.data_B = input['fold_B' if AtoB else 'fold_A'].to(self.device)  # get image data fold_B
         self.image_paths = input['A_paths' if AtoB else 'B_paths']  # get image paths
 
     def forward(self):

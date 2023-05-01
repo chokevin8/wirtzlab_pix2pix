@@ -24,7 +24,7 @@ class ColorizationDataset(BaseDataset):
             the modified parser.
 
         By default, the number of channels for input image  is 1 (L) and
-        the number of channels for output image is 2 (ab). The direction is from A to B
+        the number of channels for output image is 2 (ab). The direction is from fold_A to fold_B
         """
         parser.set_defaults(input_nc=1, output_nc=2, direction='AtoB')
         return parser
@@ -47,9 +47,9 @@ class ColorizationDataset(BaseDataset):
         Parameters:
             index - - a random integer for data indexing
 
-        Returns a dictionary that contains A, B, A_paths and B_paths
-            A (tensor) - - the L channel of an image
-            B (tensor) - - the ab channels of the same image
+        Returns a dictionary that contains fold_A, fold_B, A_paths and B_paths
+            fold_A (tensor) - - the L channel of an image
+            fold_B (tensor) - - the ab channels of the same image
             A_paths (str) - - image paths
             B_paths (str) - - image paths (same as A_paths)
         """
@@ -61,7 +61,7 @@ class ColorizationDataset(BaseDataset):
         lab_t = transforms.ToTensor()(lab)
         A = lab_t[[0], ...] / 50.0 - 1.0
         B = lab_t[[1, 2], ...] / 110.0
-        return {'A': A, 'B': B, 'A_paths': path, 'B_paths': path}
+        return {'fold_A': A, 'fold_B': B, 'A_paths': path, 'B_paths': path}
 
     def __len__(self):
         """Return the total number of images in the dataset."""

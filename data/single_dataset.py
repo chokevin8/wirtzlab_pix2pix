@@ -26,14 +26,14 @@ class SingleDataset(BaseDataset):
         Parameters:
             index - - a random integer for data indexing
 
-        Returns a dictionary that contains A and A_paths
-            A(tensor) - - an image in one domain
+        Returns a dictionary that contains fold_A and A_paths
+            fold_A(tensor) - - an image in one domain
             A_paths(str) - - the path of the image
         """
         A_path = self.A_paths[index]
         A_img = Image.open(A_path).convert('RGB')
         A = self.transform(A_img)
-        return {'A': A, 'A_paths': A_path}
+        return {'fold_A': A, 'A_paths': A_path}
 
     def __len__(self):
         """Return the total number of images in the dataset."""

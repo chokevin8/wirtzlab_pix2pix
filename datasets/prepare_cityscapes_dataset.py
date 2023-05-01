@@ -29,8 +29,8 @@ def process_cityscapes(gtFine_dir, leftImg8bit_dir, output_dir, phase):
     save_phase = 'test_pix2pix' if phase == 'val' else 'train'
     savedir = os.path.join(output_dir, save_phase)
     os.makedirs(savedir, exist_ok=True)
-    os.makedirs(savedir + 'A', exist_ok=True)
-    os.makedirs(savedir + 'B', exist_ok=True)
+    os.makedirs(savedir + 'fold_A', exist_ok=True)
+    os.makedirs(savedir + 'fold_B', exist_ok=True)
     print("Directory structure prepared at %s" % output_dir)
     
     segmap_expr = os.path.join(gtFine_dir, phase) + "/*/*_color.png"
@@ -57,9 +57,9 @@ def process_cityscapes(gtFine_dir, leftImg8bit_dir, output_dir, phase):
         sidebyside.save(savepath, format='JPEG', subsampling=0, quality=100)
 
         # data for cyclegan where the two images are stored at two distinct directories
-        savepath = os.path.join(savedir + 'A', "%d_A.jpg" % i)
+        savepath = os.path.join(savedir + 'fold_A', "%d_A.jpg" % i)
         photo.save(savepath, format='JPEG', subsampling=0, quality=100)
-        savepath = os.path.join(savedir + 'B', "%d_B.jpg" % i)
+        savepath = os.path.join(savedir + 'fold_B', "%d_B.jpg" % i)
         segmap.save(savepath, format='JPEG', subsampling=0, quality=100)
         
         if i % (len(segmap_paths) // 10) == 0:
